@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@google/genai": "^2.24.0",
+    "@whiskeysockets/baileys": "^7.0.0-rc14"
+  }
+}
