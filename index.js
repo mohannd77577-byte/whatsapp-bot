@@ -1,7 +1,6 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const { GoogleGenAI } = require('@google/genai');
 
-// مفتاح الذكاء الاصطناعي الخاص بك (تأكد من وضعه هنا أو عبر المتغيرات البيئية في Render)
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY' });
 
 const vipContacts = [
