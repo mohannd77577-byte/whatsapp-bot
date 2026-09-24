@@ -1,12 +1,8 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const { GoogleGenAI } = require('@google/genai');
-const readline = require('readline');
 
-// مفتاح الذكاء الاصطناعي الخاص بك
-const ai = new GoogleGenAI({ apiKey: 'YOUR_GEMINI_API_KEY' });
-
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-const question = (text) => new Promise((resolve) => rl.question(text, resolve));
+// مفتاح الذكاء الاصطناعي الخاص بك (تأكد من وضعه هنا أو عبر المتغيرات البيئية في Render)
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY' });
 
 const vipContacts = [
   '967774098249', // قتيبه جواد
@@ -39,19 +35,18 @@ async function startBot() {
     printQRInTerminal: false
   });
 
-  if (!sock.authState.creds.registered) {
-    const phoneNumber = await question('ادخل رقم هاتفك مع المفتاح الدولي (مثال 967XXXXXXXXX): ');
-    const code = await sock.requestPairingCode(phoneNumber.trim());
-    console.log(`\n🔑 رمز الربط الخاص بك هو: ${code}\n`);
-  }
-
   sock.ev.on('creds.update', saveCreds);
 
   sock.ev.on('connection.update', (update) => {
     const { connection, lastDisconnect } = update;
     if (connection === 'close') {
       const shouldReconnect = (lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut);
-      if (shouldReconnect) startBot();
+      if (shouldReconnect) {
+        console.log('🔄 إعادة الاتصال بالواتساب...');
+        startBot();
+      } else {
+        console.log('⚠️ تم تسجيل الخروج من الواتساب.');
+      }
     } else if (connection === 'open') {
       console.log('✅ تم الاتصال بنجاح بالواتساب وجاهز للعمل!');
     }
